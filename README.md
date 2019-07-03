@@ -6,7 +6,7 @@ Quickly building a custom text classifier able to assign a specific label to a g
 
 ## AWS Service ☁️
 
-As we want to be fast, we are taking a shortcut. While we could have made a custom model in Sagemaker or using a best in class NLP classification models from the research community, we are going to leverage a high-level Machine Learning service from AWS: [Comprehend Custom Classification](https://aws.amazon.com/comprehend/features/) . It allows to customize a NLP model able to label a given text: exactly our use case.
+As we want to be fast, we are taking a shortcut. While we could have made a custom model in Sagemaker or using a best in class NLP classification models from the research community, we are going to leverage a high-level Machine Learning service from AWS: [Comprehend Custom Classification](https://aws.amazon.com/comprehend/features/). It allows to customize a NLP model able to label a given text: exactly our use case.
 
 ## Data and labels 🗄
 
@@ -32,11 +32,11 @@ Steps to follow are relatively simple:
 4. Prepare data for training
 5. Upload training data in the S3 bucket
 6. Launch a “Train Classifier” job from the console: “Amazon Comprehend” > “Custom Classification” > “Train Classifier”
-7. Prepare data for classification (one text per line, no header, same format than training data). Some more details [here](https://docs.aws.amazon.com/comprehend/latest/dg/how-class-run.html)
+7. Prepare data for classification (one text per line, no header, same format as training data). Some more details [here](https://docs.aws.amazon.com/comprehend/latest/dg/how-class-run.html)
 8. Launch a custom classification job
 9. Gather results: a file name output.tar.gz is generated in the destination bucket. File format is [JSON Line]( https://docs.aws.amazon.com/comprehend/latest/dg/how-class-run.html).
 
-## Pre requisites ⚙️
+## Prerequisites ⚙️
 
 You have an AWS account, and the AWS CLI is [installed and configured](https://docs.aws.amazon.com/cli/latest/userguide/install-macos.html).
 
@@ -60,7 +60,7 @@ Now, it is time to get our hands dirty.
 
 ### Creating the bucket
 
-The following command creates the bucket `hervenivon-poc`. As bucket name are unique, please change it to your desire.
+The following command creates the bucket `hervenivon-poc`. As bucket names are unique, please change it to your desire.
 
 ```shell
 $> aws s3api create-bucket --acl private --bucket `hervenivon-poc` --region us-east-1
@@ -164,7 +164,7 @@ You should see something like:
 }
 ```
 
-Now we must attach the permissions to the role:
+Now we must attach permissions to the role:
 
 ```shell
 $> aws iam put-role-policy --role-name ComprehendBucketAccessRole --policy-name BucketAccessPolicy --policy-document file://ComprehendBucketAccessRole-Permissions.json
@@ -210,7 +210,7 @@ The file `classes.txt` contains the label for each line:
 
 `train.csv` contains 1400000 lines and `test.csv` 60000 lines. Amazon Comprehend uses between 10 and 20 percent of the documents submitted for training to test the custom classifier.
 
-The following commands indicates us that the data are evenly distributed.
+The following command indicates us that the data are evenly distributed.
 
 ```shel
 $> awk -F '","' '{print $1}'  yahoo_answers_csv/train.csv | sort | uniq -c
@@ -251,15 +251,15 @@ For the inference part of it - when you want your custom model to determine whic
 - No header
 - Format UTF-8, carriage return “\n”.
 
-Launch data preparation with the following Terminal command. `prepare_data.py` assumes that you are at the root folder of that repository and that you have extract the yahoo corpus into the `yahoo_answers_csv` directory.
+Launch data preparation with the following Terminal command. `prepare_data.py` assumes that you are at the root folder of that repository and that you have extracted the Yahoo corpus into the `yahoo_answers_csv` directory.
 
 ```shell
 $> ./prepare_data.py
 ```
 
-This script is tied to the yahoo corpus and leverage the [pandas](https://pandas.pydata.org/) library to format the training and testing datasets to match Amazon Comprehend expectations described above.
+This script is tied to the Yahoo corpus and leverage the [pandas](https://pandas.pydata.org/) library to format the training and testing datasets to match Amazon Comprehend expectations described above.
 
-Note 💡: for the moment, we encode comma characters in sentences with the equivalent HTML encoding: '&#44;'. May a better escaping exist, I did not found it in the documentation. Between double quotes doesn’t work, ‘\,’ doesn’t work neither. I opened an [issue](https://github.com/awsdocs/amazon-comprehend-developer-guide/issues/18) on the Comprehend documentation to get the recommended approach.
+Note 💡: for the moment, we encode comma characters in sentences with the equivalent HTML encoding: '&#44;'. May a better escaping exist, I did not find it in the documentation. Between double quotes doesn’t work, ‘\,’ doesn’t work neither. I opened an [issue](https://github.com/awsdocs/amazon-comprehend-developer-guide/issues/18) on the Comprehend documentation to get the recommended approach.
 
 ### Uploading the data
 
@@ -348,7 +348,7 @@ In our case the training took 28 minutes.
 
 We see that our model has a precision of 0.72—in other words, when it predicts a label, it is correct 72% of the time.
 
-We see also that our model has a recall of 0.72—in other words, it correctly identifies 72% of labels.
+We also see that our model has a recall of 0.72—in other words, it correctly identifies 72% of labels.
 
 ### Inference
 
@@ -422,7 +422,7 @@ One line from the predictions example:
 {"File": "comprehend-test.csv", "Line": "9", "Classes": [{"Name": "ENTERTAINMENT_AND_MUSIC", "Score": 0.9685}, {"Name": "EDUCATION_AND_REFERENCE", "Score": 0.0159}, {"Name": "BUSINESS_AND_FINANCE", "Score": 0.0102}]}
 ```
 
-Which means that our custom model predicted with a 96.8% confidence score that the following text was related to Entertainment and music.
+Which means that our custom model predicted with a 96.8% confidence score that the following text was related to the "Entertainment and music" category.
 
 ```txt
 "What was the first Disney animated character to appear in color? \n Donald Duck was the first major Disney character to appear in color&#44; in his debut cartoon&#44; \"The Wise Little Hen\" in 1934.\n\nFYI: Mickey Mouse made his color debut in the 1935 'toon&#44; \"The Band Concert&#44;\" and the first color 'toon from Disney was \"Flowers and Trees&#44;\" in 1932."
