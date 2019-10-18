@@ -32,7 +32,7 @@ trainFrame[0] = trainFrame[0].apply({
                     9:'FAMILY_AND_RELATIONSHIPS',
                     10:'POLITICS_AND_GOVERNMENT'
                 }.get)
-trainFrame['document'] = trainFrame[trainFrame.columns[1:]].apply(
+trainFrame['document'] = trainFrame[trainFrame.columns[1:]].progress_apply(
     lambda x: ' \\n '.join(x.dropna().astype(str)),
     axis=1
 )
@@ -48,7 +48,7 @@ trainFrame.to_csv(path_or_buf=DSTTRAINFILE,
 
 validationFrame = pd.read_csv(SRCVALIDATIONFILE, header=None)
 tqdm.pandas()
-validationFrame['document'] = validationFrame[validationFrame.columns[1:]].apply(
+validationFrame['document'] = validationFrame[validationFrame.columns[1:]].progress_apply(
     lambda x: ' \\n '.join(x.dropna().astype(str)),
     axis=1
 )
