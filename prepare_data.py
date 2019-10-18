@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pandas as pd
+from tqdm import tqdm
 
 SRCTRAINFILE='yahoo_answers_csv/train.csv'
 SRCVALIDATIONFILE='yahoo_answers_csv/test.csv'
@@ -11,6 +12,7 @@ DSTVALIDATIONFILE='comprehend-test.csv'
 MAXITEM=100000
 
 trainFrame = pd.read_csv(SRCTRAINFILE, header=None)
+tqdm.pandas()
 
 for i in range(1, 11):
     num = len(trainFrame[trainFrame[0] == i])
@@ -45,6 +47,7 @@ trainFrame.to_csv(path_or_buf=DSTTRAINFILE,
 
 
 validationFrame = pd.read_csv(SRCVALIDATIONFILE, header=None)
+tqdm.pandas()
 validationFrame['document'] = validationFrame[validationFrame.columns[1:]].apply(
     lambda x: ' \\n '.join(x.dropna().astype(str)),
     axis=1
