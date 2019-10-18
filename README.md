@@ -45,7 +45,7 @@ You have anaconda [available](https://docs.conda.io/projects/conda/en/latest/use
 Create the conda environment for data preparation:
 
 ```shell
-$> conda create --name comprehendCustomClassification python=3.7 pandas ipython
+$> conda create --name comprehendCustomClassification python=3.7 pandas tqdm ipython
 ```
 
 Activate conda environment:
