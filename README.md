@@ -10,7 +10,7 @@ As we want to be fast, we are taking a shortcut. While we could have made a cust
 
 ## Data and labels 🗄
 
-We are going to use Yahoo answers corpus used in “[Text Understanding from Scratch](https://arxiv.org/abs/1502.01710)” paper by Xiang Zhang and Yann LeCun. This dataset is available on a publicly shared [Drive](https://drive.google.com/drive/u/0/folders/0Bz8a_Dbh9Qhbfll6bVpmNUtUcFdjYmF2SEpmZUZUcVNiMUw1TWN6RDV3a0JHT3kxLVhVR2M).
+We are going to use Yahoo answers corpus used in “[Text Understanding from Scratch](https://arxiv.org/abs/1502.01710)” paper by Xiang Zhang and Yann LeCun. This dataset is made available on the [AWS Open Data Registry](https://registry.opendata.aws/fast-ai-nlp/).
 
 If you want to use your own dataset, beware that:
 
@@ -174,7 +174,7 @@ You should see no output.
 
 ### Preparing the data
 
-Once you have downloaded the data from the mentioned Drive, you get a zip file `yahoo_answers_csv.tar.gz` containing for files:
+Once you have downloaded the data from the mentioned Drive, you get a zip file `yahoo_answers_csv.tar.gz` containing four files:
 
 - `classes.txt`
 - `readme.txt`
