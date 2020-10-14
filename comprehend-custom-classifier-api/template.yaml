@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  comprehend-custom-classifier-api
+
+  Sample SAM Template for comprehend-custom-classifier-api
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+# More info about Parameters: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-deploy.html
+Parameters:
+  EndpointARN:
+    Type: String
+    Description: The Custom Classifier Endpoint ARN to use
+    Default: arn:aws:comprehend:us-east-1:123456789012:document-classifier-endpoint/yahoo-answers-endpoint
+
+Resources:
+  CustomClassifierFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: custom_classifier/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Description: >
+        Looks for a `text` parameter in the event query string.
+        
+        With that parameter, calls the Amazon Comprehend Custom Classifier and returns classification.
+      Environment:
+        Variables:
+          ENDPOINT_ARN: !Ref EndpointARN
+      Policies:
+        - AWSLambdaExecute
+        - Version: '2012-10-17' # Policy Document
+          Statement:
+            - Effect: Allow
+              Action:
+                - comprehend:ClassifyDocument
+              Resource: '*'
+      Events:
+        Classification:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /classify
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+            RequestParameters:
+              - method.request.querystring.text:
+                  Required: true
+    
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  CustomClassifierApi:
+    Description: "API Gateway endpoint URL for Prod stage for Custom Classifier function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/classify/"
+  CustomClassifierFunction:
+    Description: "Custom Classification Lambda Function ARN"
+    Value: !GetAtt CustomClassifierFunction.Arn
+  CustomClassificationIamRole:
+    Description: "Implicit IAM Role created for Custom Classification function"
+    Value: !GetAtt CustomClassifierFunctionRole.Arn
