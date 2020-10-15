@@ -67,7 +67,7 @@ You have an [AWS account](http://docs.aws.amazon.com/sagemaker/latest/dg/gs-acco
 ## Deploy the Sagemaker notebook instance
 
 ```bash
-aws cloudformation deploy --template-file comprehend-experiment-notebook.yml --stack-name comprehend-experiment
+aws cloudformation deploy --template-file comprehend-experiment-notebook.yml --stack-name comprehend-experiment --capabilities CAPABILITY_IAM --region us-east-1
 ```
 
 ## Note ℹ
