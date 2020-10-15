@@ -51,9 +51,6 @@ Resources:
             echo "Custom OnStart Lifecycle Config for future use"'
 
 Outputs:
-  SagemakerNotebookInstanceName:
-    Description: Sagemaker notebook instance name
-    Value: !Ref SagemakerInstance
-  SagemakerNotebookInstanceId:
-    Description: Sagemaker notebook instance id
+  SagemakerNotebookInstanceARN:
+    Description: Sagemaker notebook instance arn
     Value: !Ref SagemakerInstance
