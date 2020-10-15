@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Easily create a comprehend experimentation notebook'
+Resources:
+  SageMakerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: sagemaker.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonS3FullAccess
+      - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+      - arn:aws:iam::aws:policy/ComprehendFullAccess
+      - arn:aws:iam::aws:policy/IAMFullAccess
+
+  SagemakerInstance:
+    Type: AWS::SageMaker::NotebookInstance
+    Properties:
+      InstanceType: ml.t3.2xlarge
+      DirectInternetAccess: Enabled
+      NotebookInstanceName: comprehend-experiment
+      VolumeSizeInGB: 5
+      DefaultCodeRepository: https://github.com/hervenivon/aws-experiments-comprehend-custom-classifier.git
+      RoleArn:
+        Fn::GetAtt:
+        - SageMakerRole
+        - Arn
+      LifecycleConfigName:
+        Fn::GetAtt:
+        - NotebookInstanceLifecycleConfig
+        - NotebookInstanceLifecycleConfigName
+  NotebookInstanceLifecycleConfig:
+    Type: AWS::SageMaker::NotebookInstanceLifecycleConfig
+    Properties:
+      NotebookInstanceLifecycleConfigName: comprehend-experiment-lifecycle-config
+      OnCreate:
+      - Content:
+          Fn::Base64:
+            '#!/bin/bash
+
+            echo "Custom OnCreate Lifecycle Config for future use"'
+      OnStart:
+      - Content:
+          Fn::Base64:
+            '#!/bin/bash
+
+            echo "Custom OnStart Lifecycle Config for future use"'
+
+Outputs:
+  SagemakerNotebookInstanceARN:
+    Description: Sagemaker notebook instance arn
+    Value: !Ref SagemakerInstance
