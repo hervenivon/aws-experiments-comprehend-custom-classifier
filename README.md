@@ -14,7 +14,7 @@ In order to support that experiments other Amazon services are leveraged:
 
 Amazon S3 to store the dataset for training and asynchronous analysis.
 
->[Amazon Simple Storage Service](https://aws.amazon.com/s3/getting-started/) is storage for the Internet. It is designed to make web-scale computing easier for developers. Amazon S3 has a simple web services interface that you can use to store and retrieve any amount of data, at any time, from anywhere on the web
+>[Amazon Simple Storage Service](https://aws.amazon.com/s3/getting-started/) is storage for the Internet. It is designed to make web-scale computing easier for developers. Amazon S3 has a simple web services interface that you can use to store and retrieve any amount of data, at any time, from anywhere on the web.
 
 Amazon Sagemaker Notebook Instances to get an integrated to AWS environment able to manipulate and explore data:
 
