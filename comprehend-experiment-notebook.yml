@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Easily create a comprehend notebook'
+Description: 'Easily create a comprehend experimentation notebook'
 Resources:
   SageMakerRole:
     Type: AWS::IAM::Role
@@ -22,7 +22,7 @@ Resources:
     Properties:
       InstanceType: ml.t3.2xlarge
       DirectInternetAccess: Enabled
-      NotebookInstanceName: comprehend-exploration
+      NotebookInstanceName: comprehend-experiment
       VolumeSizeInGB: 5
       DefaultCodeRepository: https://github.com/hervenivon/aws-experiments-comprehend-custom-classifier.git
       RoleArn:
@@ -36,7 +36,7 @@ Resources:
   NotebookInstanceLifecycleConfig:
     Type: AWS::SageMaker::NotebookInstanceLifecycleConfig
     Properties:
-      NotebookInstanceLifecycleConfigName: comprehend-exploration-lifecycle-config
+      NotebookInstanceLifecycleConfigName: comprehend-experiment-lifecycle-config
       OnCreate:
       - Content:
           Fn::Base64:

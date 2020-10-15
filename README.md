@@ -1,4 +1,4 @@
-# AWS Comprehend Custom Classification
+# Amazon Comprehend Experiment
 
 <a id="Purpose"></a>
 ## Purpose 🎯
@@ -40,7 +40,7 @@ The guided steps aim at helping you using your own dataset to train your Custom 
 .
 ├── README.md                                             <-- This file
 ├── comprehend.ipynb                                      <-- Jupyter notebook which provides all details to interact with Amazon Comprehend
-├── comprehend-exploration-notebook.yml                   <-- Cloud formation template to deploy the notebook
+├── comprehend-experiment-notebook.yml                    <-- Cloud formation template to deploy the notebook
 ├── sam-app                                               <-- To support a real-time analysis API open to others in the Jupyter notebook, this repository also provides a SAM application to quickly deploy this API
 │   ├── README.md
 │   ├── custom_classifier                                  <-- Lambda function code
@@ -67,7 +67,7 @@ You have an [AWS account](http://docs.aws.amazon.com/sagemaker/latest/dg/gs-acco
 ## Deploy the Sagemaker notebook instance
 
 ```bash
-aws cloudformation deploy --template-file comprehend-exploration-notebook.yml --stack-name comprehend-exploration
+aws cloudformation deploy --template-file comprehend-experiment-notebook.yml --stack-name comprehend-experiment
 ```
 
 ## Note ℹ
