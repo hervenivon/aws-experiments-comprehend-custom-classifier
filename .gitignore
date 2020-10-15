@@ -1,4 +1,6 @@
 yahoo_answers_csv.tgz
 yahoo_answers*
 comprehend-*.csv
+output.tar.gz
+output/*
 .ipynb_checkpoints
