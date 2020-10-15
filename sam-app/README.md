@@ -2,15 +2,15 @@
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
-- hello_world - Code for the application's Lambda function.
+- custom_classifier - Code for the application's Lambda function.
 - events - Invocation events that you can use to invoke the function.
-- tests - Unit tests for the application code. 
+- tests - Unit tests for the application code.
 - template.yaml - A template that defines the application's AWS resources.
 
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
-If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
+If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.
+The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started:
 
 * [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
 * [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
@@ -19,15 +19,15 @@ The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI
 
 ## Deploy the sample application
 
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches AWS Lambda. It can also emulate your application's build environment and API.
 
 To use the SAM CLI, you need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* [Python 3 installed](https://www.python.org/downloads/)
+* Python 3 - [Install Python](https://www.python.org/downloads/)
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
-To build and deploy your application for the first time, run the following in your shell:
+To build and deploy your application for the first time, run the following command in your shell:
 
 ```bash
 sam build --use-container
@@ -42,42 +42,52 @@ The first command will build the source of your application. The second command 
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modified IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
 * **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
+The guided deployment will also ask for the comprehend custom endpoint ARN to pass it to the AWS Lambda function at deployment time as an environment variable.
+
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.
+
+As the `template.yaml` requires an API Key (`ApiKeyRequired: true`), it is necessary to [create a usage plan](
+https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html) in order to get access to the API
 
 ## Use the SAM CLI to build and test locally
 
 Build your application with the `sam build --use-container` command.
 
 ```bash
-comprehend-custom-classifier-api$ sam build --use-container
+sam-app$ sam build --use-container
 ```
 
-The SAM CLI installs dependencies defined in `hello_world/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
+The SAM CLI installs dependencies defined in `custom_classifier/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
 
 Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
 
-Run functions locally and invoke them with the `sam local invoke` command.
+Run functions locally and invoke them with the `sam local invoke` command or with the more complete:
 
 ```bash
-comprehend-custom-classifier-api$ sam local invoke CustomClassifierFunction --event events/event.json
+sam-app$ sam local invoke CustomClassifierFunction --event events/event.json
 ```
 
 The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
 
 ```bash
-comprehend-custom-classifier-api$ sam local start-api
-comprehend-custom-classifier-api$ curl http://localhost:3000/
+sam-app$ sam local start-api
+sam-app$ curl http://localhost:3000/classify?text=What%20is%20the%20answer%20to%20life%20the%20universe%20and%20everything%3F
 ```
 
 The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
 ```yaml
       Events:
-        HelloWorld:
+        Classification:
           Type: Api
           Properties:
-            Path: /hello
+            Path: /classify
             Method: get
+            Auth:
+              ApiKeyRequired: true
+            RequestParameters:
+              - method.request.querystring.text:
+                  Required: true
 ```
 
 ## Add a resource to your application
@@ -90,7 +100,7 @@ To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs`
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
 ```bash
-comprehend-custom-classifier-api$ sam logs -n CustomClassifierFunction --stack-name comprehend-custom-classifier-api --tail
+sam-app$ sam logs -n CustomClassifierFunction --stack-name comprehend-custom-classifier-api --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
@@ -100,8 +110,8 @@ You can find more information and examples about filtering Lambda function logs 
 Tests are defined in the `tests` folder in this project. Use PIP to install the [pytest](https://docs.pytest.org/en/latest/) and run unit tests.
 
 ```bash
-comprehend-custom-classifier-api$ pip install pytest pytest-mock --user
-comprehend-custom-classifier-api$ python -m pytest tests/ -v
+sam-app$ pip install pytest pytest-mock --user
+sam-app$ python -m pytest tests/ -v
 ```
 
 ## Cleanup
@@ -115,5 +125,3 @@ aws cloudformation delete-stack --stack-name comprehend-custom-classifier-api
 ## Resources
 
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
-
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
